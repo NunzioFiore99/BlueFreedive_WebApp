@@ -1,5 +1,6 @@
 # dependencies
 app/node_modules
+app/package-lock.json
 app/.pnp
 app/.pnp.js
 
