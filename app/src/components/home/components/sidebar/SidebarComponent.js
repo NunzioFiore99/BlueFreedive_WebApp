@@ -20,7 +20,7 @@ const SidebarComponent = () => {
     <Drawer variant="permanent" sx={{ width: 240 }}>
       <List>
         {menuItems.map((item, index) => (
-          <ListItem button key={index} component={Link} to={item.path}>
+          <ListItem button={true} key={index} component={Link} to={item.path}>
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.label} />
           </ListItem>
