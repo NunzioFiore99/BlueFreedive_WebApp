@@ -9,18 +9,18 @@ const SidebarComponent = () => {
 
   const menuItems = [
     { label: 'Profile', icon: <AccountCircle />, path: '/profile' },
-    { label: 'Dive Sessions', icon: <Person />, path: '/dive-sessions' },
+    { label: 'Dive Sessions', icon: <Person />, path: '/dive' },
   ];
 
   if (user?.roles.includes('ROLE_ADMIN')) {
-    menuItems.push({ label: 'Manage Users', icon: <Group />, path: '/manage-users' });
+    menuItems.push({ label: 'Manage Users', icon: <Group />, path: '/users-management' });
   }
 
   return (
     <Drawer variant="permanent" sx={{ width: 240 }}>
       <List>
         {menuItems.map((item, index) => (
-          <ListItem button={true} key={index} component={Link} to={item.path}>
+          <ListItem button key={index} component={Link} to={item.path}>
             <ListItemIcon>{item.icon}</ListItemIcon>
             <ListItemText primary={item.label} />
           </ListItem>

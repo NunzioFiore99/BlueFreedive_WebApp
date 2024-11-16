@@ -16,12 +16,13 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginComponent />} />
           <Route element={<RequireAuth roles={['ROLE_ADMIN', 'ROLE_USER']} />}>
-            <Route path="/" element={<HomeComponent />} />
-            <Route path="/profile" element={<ProfileComponent />} />
-            <Route path="/dive" element={<DiveSessionComponent />} />
-          </Route>
-          <Route element={<RequireAuth roles={['ROLE_ADMIN']} />}>
-            <Route path="/users-management" element={<UserComponent />} />
+            <Route path="/" element={<HomeComponent />} >
+              <Route path="/profile" element={<ProfileComponent />} />
+              <Route path="/dive" element={<DiveSessionComponent />} />
+              <Route element={<RequireAuth roles={['ROLE_ADMIN']} />}>
+                <Route path="/users-management" element={<UserComponent />} />
+              </Route>
+            </Route>
           </Route>
         </Routes>
       </Router>
