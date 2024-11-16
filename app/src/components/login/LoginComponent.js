@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import './login.css';
+import './LoginComponent.css';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, registerUser } from '../../services/authService';
+import { loginUser, registerUser } from '../../services/AuthService';
+import Button from '@mui/material/Button';
 
 const LoginComponent = () => {
   const navigate = useNavigate(); 
@@ -48,7 +49,8 @@ const LoginComponent = () => {
 
   return (
     <div className="login-container">
-      <h2>{isLogin ? 'Login' : 'Registrazione'}</h2>
+      <h2>{isLogin ? 'Accedi' : 'Registrati'}</h2>
+
       <form onSubmit={handleSubmit}>
         {isLogin ? (
           <>
@@ -93,11 +95,11 @@ const LoginComponent = () => {
           </>
         )}
         {error && <p className="error">{error}</p>}
-        <button type="submit">{isLogin ? 'Login' : 'Registrati'}</button>
+        <button type="submit">{isLogin ? 'Accedi' : 'Registrati'}</button>
       </form>
-      <p onClick={() => setIsLogin(!isLogin)}>
-        {isLogin ? "Non hai un account? Registrati" : "Hai già un account? Accedi"}
-      </p>
+
+      {isLogin ? <div className='switch-login-button-container'><p className='switch-login-text'>Non hai un account? </p> <Button variant="text" onClick={() => setIsLogin(!isLogin)}>Registrati</Button></div> 
+      : <div className='switch-login-button-container'> <p className='switch-login-text'>Hai già un account?</p> <Button variant="text" onClick={() => setIsLogin(!isLogin)}>Accedi</Button></div>}
     </div>
   );
 };

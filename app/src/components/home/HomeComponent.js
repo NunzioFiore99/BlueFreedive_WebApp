@@ -1,5 +1,5 @@
 import React from 'react';
-import './home.css';
+import './HomeComponent.css';
 import { Container, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
