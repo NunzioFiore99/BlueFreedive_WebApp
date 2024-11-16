@@ -51,7 +51,9 @@ export const AuthProvider = ({ children }) => {
       }
     }
 
-    const getAccessToken = () => localStorage.getItem('token');
+    const getAccessToken = () => {
+      return user ? user.accessToken : localStorage.getItem('accessToken');
+    };
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout, getAccessToken }}>
