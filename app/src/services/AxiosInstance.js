@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext'
-import { AuthClient } from './AuthClient';
+import { getGlobalAccessToken, updateGlobalAccessToken } from '../context/AuthContext'
 
 const axiosInstance = axios.create({
     baseURL: `${process.env.REACT_APP_SERVER_URL}`,
@@ -9,8 +8,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const { getAccessToken } = useAuth();
-    const token = getAccessToken();
+    const token = getGlobalAccessToken();
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -26,18 +24,15 @@ axiosInstance.interceptors.response.use(
     async (error) => {
       if (error.response && (error.response.status === 401 || error.response.status === 403 )) {
         try {
-          console.log("access token scaduto recupero uno nuovo");
-          const response = await AuthClient.newAccessToken();
-          const newAccessToken = response.accessToken;
-          const { login } = useAuth();
-          login(newAccessToken);
-          console.log("access token recuperato, riprovo la vecchia richiesta");
-  
-          // Ripeti la richiesta originale con il nuovo token
+          const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/auth/accessToken`, {withCredentials: true});
+          const newAccessToken = response.data.accessToken;
+          updateGlobalAccessToken(newAccessToken);
+          console.log("New access token retrieved and updated...");
+          // Ripeto la richiesta originale con il nuovo token
           error.config.headers['Authorization'] = `Bearer ${newAccessToken}`;
           return axiosInstance(error.config);
         } catch (err) {
-          console.error('Errore nel rinnovo del token:', err);
+          console.error('Retrieve new access token error:', err);
           return Promise.reject(err);
         }
       }

@@ -3,6 +3,10 @@ import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
+// Variabili globali
+let globalAccessToken = null; // Per accedere al token globale
+let globalSetToken = null;   // Per aggiornare il token globale
+
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -17,11 +21,13 @@ export const AuthProvider = ({ children }) => {
           roles: decoded.roles,
           accessToken,
         });
+        globalAccessToken = accessToken; // Aggiorna il token globale
       };
 
     const logout = () => {
       localStorage.removeItem('accessToken');
       setUser(null);
+      globalAccessToken = null; // Rimuove il token globale
     };
 
     useEffect(() => {
@@ -32,7 +38,6 @@ export const AuthProvider = ({ children }) => {
     const isTokenPresent = () => {
       const storedToken = localStorage.getItem('accessToken');
       if (storedToken) {
-        console.log("il token sta");
         try {
           const decoded = jwtDecode(storedToken);
           setUser({
@@ -52,8 +57,13 @@ export const AuthProvider = ({ children }) => {
     }
 
     const getAccessToken = () => {
-      return user ? user.accessToken : localStorage.getItem('accessToken');
+      return globalAccessToken || localStorage.getItem('accessToken');
     };
+
+    // Funzione per aggiornare il token da un punto globale
+    if (!globalSetToken) {
+      globalSetToken = login;
+    }
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout, getAccessToken }}>
@@ -61,5 +71,16 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+// Funzione per accedere al token globale
+export const getGlobalAccessToken = () => globalAccessToken;
+
+// Funzione per aggiornare il token globale
+export const updateGlobalAccessToken = (newToken) => {
+  if (globalSetToken) {
+    globalSetToken(newToken);
+  }
+};
+
 
 export const useAuth = () => useContext(AuthContext);
