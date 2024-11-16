@@ -1,23 +1,26 @@
 import React from 'react';
 import './HomeComponent.css';
-import { Container, Typography, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Box, Toolbar } from '@mui/material';
+import Sidebar from './components/sidebar/SidebarComponent';
+import Header from './components/header/HeaderComponent';
+import Footer from './components/footer/FooterComponent';
+import { Outlet } from 'react-router-dom';
 
 function HomeComponent() {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem('token'); // Rimuovi il token (simula il logout)
-    navigate('/'); // Torna alla pagina di login
-  };
-
   return (
-    <Container component="main" maxWidth="xs">
-      <Typography variant="h5">Benvenuto nella Home Page</Typography>
-      <Button onClick={handleLogout} variant="contained" color="secondary" sx={{ mt: 2 }}>
-        Logout
-      </Button>
-    </Container>
+    <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
+      <Header />
+      <Box sx={{ display: 'flex', flexGrow: 1 }}>
+        <Sidebar />
+        <Box sx={{ flexGrow: 1 }}>
+          <Toolbar />
+          <Box sx={{ p: 3 }}>
+            <Outlet />
+          </Box>
+        </Box>
+      </Box>
+      <Footer />
+    </Box>
   );
 }
 

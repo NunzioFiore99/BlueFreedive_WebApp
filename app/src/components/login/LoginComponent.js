@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import './LoginComponent.css';
+import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, registerUser } from '../../services/AuthService';
+import { loginUser, registerUser } from '../../services/AuthClient';
 import Button from '@mui/material/Button';
 
 const LoginComponent = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     username: '',
@@ -28,22 +30,20 @@ const LoginComponent = () => {
     try {
       if (isLogin) {
         const response = await loginUser(formData.username, formData.password);
-        console.log(response.data);
         if (response.accessToken) {
-          localStorage.setItem('accessToken', response.accessToken);
-          navigate('/home');
+          login(response.accessToken);
+          navigate('/');
         }
       } else {
         const response = await registerUser(formData);
         console.log(response);
         if (response) {
           setIsLogin(!isLogin);
-          console.log("esegui la login");
         }
       }
     } catch (error) {
-      setError('Si è verificato un errore.');
-      console.error(error);
+      setError('Error during login.');
+      console.error('Login error', error);
     }
   };
 
