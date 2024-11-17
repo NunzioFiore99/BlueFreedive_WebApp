@@ -3,9 +3,8 @@ import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
-// Variabili globali
-let globalAccessToken = null; // Per accedere al token globale
-let globalSetToken = null;   // Per aggiornare il token globale
+let globalAccessToken = null;
+let globalSetToken = null;
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -21,13 +20,13 @@ export const AuthProvider = ({ children }) => {
           roles: decoded.roles,
           accessToken,
         });
-        globalAccessToken = accessToken; // Aggiorna il token globale
+        globalAccessToken = accessToken;
       };
 
     const logout = () => {
       localStorage.removeItem('accessToken');
       setUser(null);
-      globalAccessToken = null; // Rimuove il token globale
+      globalAccessToken = null;
     };
 
     useEffect(() => {
@@ -60,7 +59,6 @@ export const AuthProvider = ({ children }) => {
       return globalAccessToken || localStorage.getItem('accessToken');
     };
 
-    // Funzione per aggiornare il token da un punto globale
     if (!globalSetToken) {
       globalSetToken = login;
     }
@@ -72,15 +70,12 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Funzione per accedere al token globale
 export const getGlobalAccessToken = () => globalAccessToken;
 
-// Funzione per aggiornare il token globale
 export const updateGlobalAccessToken = (newToken) => {
   if (globalSetToken) {
     globalSetToken(newToken);
   }
 };
-
 
 export const useAuth = () => useContext(AuthContext);

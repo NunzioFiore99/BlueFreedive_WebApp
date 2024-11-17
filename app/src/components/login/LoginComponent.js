@@ -36,7 +36,6 @@ const LoginComponent = () => {
         }
       } else {
         const response = await registerUser(formData);
-        console.log(response);
         if (response) {
           setIsLogin(!isLogin);
         }

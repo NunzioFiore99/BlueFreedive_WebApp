@@ -1,16 +1,15 @@
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { getGlobalAccessToken, updateGlobalAccessToken } from '../context/AuthContext';
+import { updateGlobalAccessToken } from '../context/AuthContext';
 
-const axiosInstance = axios.create({
+const axiosLoginInstance = axios.create({
     baseURL: `${process.env.REACT_APP_SERVER_URL}`,
     withCredentials: true,
 });
 
-axiosInstance.interceptors.request.use(
+axiosLoginInstance.interceptors.request.use(
     (config) => {
       if (config && config.headers && config.addAuthHeader) {
-        const token = getGlobalAccessToken();
+        const token = localStorage.getItem('accessToken');
         if (token) {
           config.headers['Authorization'] = `Bearer ${token}`;
         }
@@ -18,22 +17,20 @@ axiosInstance.interceptors.request.use(
       return config;
     },
     (error) => {
-      return Promise.reject(error);
+      return Promise.reject(error instanceof Error ? error : new Error('An unknown error occurred.'));
     }
 );
 
-axiosInstance.interceptors.response.use(
+axiosLoginInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
       if (error.response && error.response.status === 401) {
         console.log('Refresh Token expired or invalid. Logout...');
         updateGlobalAccessToken(null);
-        const navigate = useNavigate();
-        navigate('/login');
-        return Promise.reject(error);
+        window.location.href = '/login';
       }
-      return Promise.reject(error);
+      return Promise.reject(error instanceof Error ? error : new Error('An unknown error occurred.'));
     }
   );
 
-export default axiosInstance;
+export default axiosLoginInstance;

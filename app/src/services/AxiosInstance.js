@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getGlobalAccessToken, updateGlobalAccessToken } from '../context/AuthContext'
+import { updateGlobalAccessToken } from '../context/AuthContext'
 
 const axiosInstance = axios.create({
     baseURL: `${process.env.REACT_APP_SERVER_URL}`,
@@ -8,14 +8,14 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = getGlobalAccessToken();
+    const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
   },
   (error) => {
-    return Promise.reject(error);
+    return Promise.reject(error instanceof Error ? error : new Error('An unknown error occurred.'));
   }
 );
 
@@ -32,12 +32,11 @@ axiosInstance.interceptors.response.use(
           error.config.headers['Authorization'] = `Bearer ${newAccessToken}`;
           return axiosInstance(error.config);
         } catch (err) {
-          console.error('Retrieve new access token error:', err);
-          return Promise.reject(err);
+          return Promise.reject(new Error('Retrieve new access token error.'));
         }
       }
   
-      return Promise.reject(error);
+      return Promise.reject(error instanceof Error ? error : new Error('An unknown error occurred.'));
     }
   );
 
