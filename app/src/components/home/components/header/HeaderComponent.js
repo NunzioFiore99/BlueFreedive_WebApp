@@ -2,6 +2,7 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import { useAuth } from '../../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { logoutUser } from '../../../../services/AuthClient';
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -9,7 +10,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
+    logoutUser();
     logout();
     navigate('/');
   };
