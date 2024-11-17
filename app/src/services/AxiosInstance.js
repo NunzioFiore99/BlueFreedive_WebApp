@@ -28,7 +28,7 @@ axiosInstance.interceptors.response.use(
           const newAccessToken = response.data.accessToken;
           updateGlobalAccessToken(newAccessToken);
           console.log("New access token retrieved and updated...");
-          // Ripeto la richiesta originale con il nuovo token
+          // Retry original request with new token
           error.config.headers['Authorization'] = `Bearer ${newAccessToken}`;
           return axiosInstance(error.config);
         } catch (err) {

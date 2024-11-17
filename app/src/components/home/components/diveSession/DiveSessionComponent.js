@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Grid2, Button, Modal, Box, TextField, Select, MenuItem, InputLabel, FormControl, IconButton } from '@mui/material';
+import './DiveSessionComponent.css';
+import { Grid, Button, Modal, Box, TextField, Select, MenuItem, InputLabel, FormControl, IconButton, Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 import moment from 'moment';
-
-
-// API calls
 import { createDiveSessionMe, retrieveDiveSessionsMe, updateDiveSessionMe, deleteDiveSessionMe } from '../../../../services/DiveSessionClient';
-
-// Icone
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PlaceIcon from '@mui/icons-material/Place';
 
 const DiveSessionComponent = () => {
   
@@ -25,7 +22,7 @@ const DiveSessionComponent = () => {
     date: '',
     location: '',
     gpsCoordinates: { lat: '', lng: '' },
-    waterType: 'SEA', // Default value
+    waterType: 'SEA',
     temperature: '',
     diveCount: '',
     maxDepth: '',
@@ -135,22 +132,43 @@ const DiveSessionComponent = () => {
   }
 
   const columns = [
-    { field: 'date', headerName: 'Date', width: 150 },
-    { field: 'location', headerName: 'Location', width: 200 },
-    { field: 'waterType', headerName: 'Water Type', width: 150 },
-    { field: 'maxDepth', headerName: 'Max Depth (m)', width: 150 },
-    { field: 'maxDiveTime', headerName: 'Max Dive Time (sec)', width: 150 },
+    { field: 'date', headerName: 'Date and Time', flex: 1, headerAlign: 'center', align: 'center', headerClassName: 'header-table' },
+    { field: 'location', headerName: 'Location', flex: 1, headerAlign: 'center', align: 'center', headerClassName: 'header-table' },
+    { field: 'gpsCoordinates', headerName: 'GPS Coordinates', flex: 1, headerAlign: 'center', align: 'center', headerClassName: 'header-table', 
+      valueGetter: (params) => {
+        return `${params.lat}, ${params.lng}`;
+      },
+    },
+    { field: 'waterType', headerName: 'Water Type', flex: 1, headerAlign: 'center', align: 'center', headerClassName: 'header-table' },
+    { field: 'temperature', headerName: 'Temperature (°C)', flex: 1, headerAlign: 'center', align: 'center', headerClassName: 'header-table' },
+    { field: 'diveCount', headerName: 'Dive Count', flex: 1, headerAlign: 'center', align: 'center', headerClassName: 'header-table' },
+    { field: 'maxDepth', headerName: 'Max Depth (m)', flex: 1, headerAlign: 'center', align: 'center', headerClassName: 'header-table' },
+    { field: 'maxDiveTime', headerName: 'Max Dive Time (sec)', flex: 1, headerAlign: 'center', align: 'center', headerClassName: 'header-table' },
+    { field: 'notes', headerName: 'Notes', flex: 1, headerAlign: 'center', align: 'center', headerClassName: 'header-table' },
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 150,
+      flex: 1,
+      headerAlign: 'center', 
+      align: 'center', 
+      headerClassName: 'header-table',
       renderCell: (params) => (
         <>
-          <IconButton onClick={() => handleOpen(params.row)}>
+          <IconButton onClick={() => handleOpen(params.row)} color="primary">
             <EditIcon />
           </IconButton>
-          <IconButton onClick={() => handleDelete(params.row.id)}>
+          <IconButton onClick={() => handleDelete(params.row.id)} color="error">
             <DeleteIcon />
+          </IconButton>
+          <IconButton
+            onClick={() => {
+              const { lat, lng } = params.row.gpsCoordinates;
+              const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+              window.open(googleMapsUrl, '_blank');
+            }}
+            color="secondary"
+          >
+            <PlaceIcon />
           </IconButton>
         </>
       ),
@@ -158,25 +176,57 @@ const DiveSessionComponent = () => {
   ];
 
   return (
-    <div>
-      <h1>Dive Session Management</h1>
-      <Button variant="contained" onClick={() => handleOpen()}>Add New Dive</Button>
-
-      <div style={{ height: 400, width: '100%' }}>
+    <Box sx={{ p: 1 }}>
+      <Typography variant="h4" gutterBottom>
+        Dive Sessions Management
+      </Typography>
+      <Button
+        variant="contained"
+        sx={{ mt: 2, mb: 4 }}
+        onClick={() => handleOpen()}
+      >
+        Add New Dive
+      </Button>
+  
+      <Box sx={{ height: "25rem", width: "100%", mb: 4 }}>
         <DataGrid
           rows={diveSessions}
-          columns={columns}
+          columns={columns.map((column) => ({
+            ...column,
+            flex: 1,
+          }))}
           pageSize={5}
           rowsPerPageOptions={[5]}
           disableSelectionOnClick
+          autoHeight
         />
-      </div>
-
+      </Box>
+  
+      {/* Modal */}
       <Modal open={open} onClose={handleClose}>
-        <Box sx={{ p: 4, backgroundColor: 'white', margin: 'auto', width: '50%', marginTop: '10%' }}>
-          <h2>{editMode ? 'Edit Dive Session' : 'Add New Dive Session'}</h2>
-          <Grid2 container spacing={2}>
-            <Grid2 item xs={6}>
+        <Box
+          sx={{
+            p: 4,
+            backgroundColor: 'white',
+            margin: 'auto',
+            width: '80%',
+            maxWidth: '900px',
+            borderRadius: 2,
+            boxShadow: 24,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2,
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <Typography variant="h5" gutterBottom>
+            {editMode ? 'Edit Dive Session' : 'Add New Dive Session'}
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Location"
@@ -184,23 +234,24 @@ const DiveSessionComponent = () => {
                 value={formData.location}
                 onChange={handleInputChange}
               />
-            </Grid2>
-            <Grid2 item xs={6}>
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateTimePicker
-                label="Date and Time"
-                value={formData.date ? dayjs(formData.date) : null}  // Usa dayjs per la gestione della data
-                onChange={(newValue) => {
-                  setFormData({
-                    ...formData,
-                    date: newValue ? newValue.toISOString() : '',  // Converte il valore in formato ISO string
-                  });
-                }}
-                renderInput={(params) => <TextField {...params} fullWidth />}
-              />
+                <DateTimePicker
+                  label="Date and Time"
+                  value={formData.date ? dayjs(formData.date) : null}
+                  onChange={(newValue) =>
+                    setFormData({
+                      ...formData,
+                      date: newValue ? newValue.toISOString() : '',
+                    })
+                  }
+                  renderInput={(params) => <TextField {...params} fullWidth />}
+                />
               </LocalizationProvider>
-            </Grid2>
-            <Grid2 item xs={6}>
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 label="GPS Latitude"
@@ -208,8 +259,8 @@ const DiveSessionComponent = () => {
                 value={formData.gpsCoordinates.lat}
                 onChange={handleInputChange}
               />
-            </Grid2>
-            <Grid2 item xs={6}>
+            </Grid>
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 label="GPS Longitude"
@@ -217,8 +268,8 @@ const DiveSessionComponent = () => {
                 value={formData.gpsCoordinates.lng}
                 onChange={handleInputChange}
               />
-            </Grid2>
-            <Grid2 item xs={6}>
+            </Grid>
+            <Grid item xs={12} sm={4}>
               <FormControl fullWidth>
                 <InputLabel>Water Type</InputLabel>
                 <Select
@@ -227,12 +278,13 @@ const DiveSessionComponent = () => {
                   name="waterType"
                   onChange={handleInputChange}
                 >
-                  <MenuItem value="SEA">Mare</MenuItem>
-                  <MenuItem value="LAKE">Lago</MenuItem>
+                  <MenuItem value="SEA">Sea</MenuItem>
+                  <MenuItem value="LAKE">Lake</MenuItem>
                 </Select>
               </FormControl>
-            </Grid2>
-            <Grid2 item xs={6}>
+            </Grid>
+
+            <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Temperature (°C)"
@@ -240,8 +292,8 @@ const DiveSessionComponent = () => {
                 value={formData.temperature}
                 onChange={handleInputChange}
               />
-            </Grid2>
-            <Grid2 item xs={6}>
+            </Grid>
+            <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Dive Count"
@@ -250,8 +302,8 @@ const DiveSessionComponent = () => {
                 value={formData.diveCount}
                 onChange={handleInputChange}
               />
-            </Grid2>
-            <Grid2 item xs={6}>
+            </Grid>
+            <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Max Depth (m)"
@@ -259,8 +311,8 @@ const DiveSessionComponent = () => {
                 value={formData.maxDepth}
                 onChange={handleInputChange}
               />
-            </Grid2>
-            <Grid2 item xs={6}>
+            </Grid>
+            <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 label="Max Dive Time (sec)"
@@ -268,8 +320,9 @@ const DiveSessionComponent = () => {
                 value={formData.maxDiveTime}
                 onChange={handleInputChange}
               />
-            </Grid2>
-            <Grid2 item xs={12}>
+            </Grid>
+
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Notes"
@@ -279,16 +332,29 @@ const DiveSessionComponent = () => {
                 multiline
                 rows={4}
               />
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
 
-          <Button variant="contained" onClick={handleSubmit} sx={{ mt: 2 }}>
-            {editMode ? 'Update Dive' : 'Add Dive'}
-          </Button>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: 2,
+              mt: 2,
+            }}
+          >
+            <Button variant="outlined" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button variant="contained" onClick={handleSubmit}>
+              {editMode ? 'Update Dive' : 'Add Dive'}
+            </Button>
+          </Box>
         </Box>
       </Modal>
-    </div>
+    </Box>
   );
+               
 };
 
 export default DiveSessionComponent;

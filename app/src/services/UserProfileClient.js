@@ -5,7 +5,7 @@ export const retrieveUserProfileMe = async () => {
     const response = await axiosInstance.get(`${process.env.REACT_APP_SERVER_URL}/api/userProfiles/me`);
     return response.data;
   } catch (error) {
-    throw new Error('Error');
+    throw new Error('Retrieve my user profile error');
   }
 };
 
@@ -14,6 +14,6 @@ export const updateUserProfileMe = async (body) => {
     const response = await axiosInstance.put(`${process.env.REACT_APP_SERVER_URL}/api/userProfiles/me`, body);
     return response.data;
   } catch (error) {
-    throw new Error('Error');
+    throw new Error('Update my user profile error');
   }
 };

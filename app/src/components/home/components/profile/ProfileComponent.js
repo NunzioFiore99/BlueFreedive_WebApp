@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import './ProfileComponent.css';
 import {
   Box,
   Typography,
@@ -11,7 +12,8 @@ import {
   FormControl,
   MenuItem,
   InputLabel,
-  Select
+  Select,
+  OutlinedInput
 } from '@mui/material';
 import { useAuth } from '../../../../context/AuthContext';
 import { retrieveUserProfileMe, updateUserProfileMe } from '../../../../services/UserProfileClient';
@@ -20,30 +22,27 @@ import { updateUserMe } from '../../../../services/UserClient';
 const ProfileComponent = () => {
   const { user } = useAuth();
 
-  // Stati per le sezioni
-  const [profileData, setProfileData] = useState(null); // Dati personali
-  const [password, setPassword] = useState(''); // Nuova password
-  const [loadingProfile, setLoadingProfile] = useState(true); // Loading per i dati personali
-  const [loadingPassword, setLoadingPassword] = useState(false); // Loading per la password
+  const [profileData, setProfileData] = useState(null);
+  const [password, setPassword] = useState('');
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [loadingPassword, setLoadingPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  // Recupera i dati personali
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await retrieveUserProfileMe(); // API per recuperare i dati
+        const response = await retrieveUserProfileMe();
         setProfileData(response);
         setLoadingProfile(false);
       } catch (err) {
-        setError('Errore nel caricamento dei dati del profilo.');
+        setError('Loading profile data error.');
         setLoadingProfile(false);
       }
     };
     fetchProfile();
   }, []);
 
-  // Gestisce il salvataggio della password
   const handlePasswordUpdate = async () => {
     setLoadingPassword(true);
     setError('');
@@ -58,13 +57,12 @@ const ProfileComponent = () => {
         setPassword('');
         setSuccess(true);
     } catch (err) {
-        setError('Errore durante l\'aggiornamento della password.');
+        setError('Update password error.');
     } finally {
         setLoadingPassword(false);
     }
   };
 
-  // Gestisce il salvataggio dei dati personali
   const handleProfileUpdate = async () => {
     setLoadingProfile(true);
     setError('');
@@ -82,7 +80,7 @@ const ProfileComponent = () => {
         await updateUserProfileMe(body);
         setSuccess(true);
     } catch (err) {
-      setError('Errore durante l\'aggiornamento dei dati personali.');
+      setError('Update personal data error.');
     } finally {
       setLoadingProfile(false);
     }
@@ -93,20 +91,21 @@ const ProfileComponent = () => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" sx={{ mb: 3 }}>
-        Profilo Utente
+    <Box sx={{ p: 1 }}>
+      <Typography variant="h4" gutterBottom>
+        My Profile
       </Typography>
 
       {/* Sezione Username, Email e Password */}
-      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+      <Paper elevation={3} sx={{ p: 3, mb: 4, mt:2 }}>
         <Typography variant="h6" sx={{ mb: 2 }}>
-          Credenziali Utente
+          User Credentials
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <TextField
               label="Username"
+              disabled
               value={user?.username || ''}
               InputProps={{ readOnly: true }}
               fullWidth
@@ -115,6 +114,7 @@ const ProfileComponent = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               label="Email"
+              disabled
               value={user?.email || ''}
               InputProps={{ readOnly: true }}
               fullWidth
@@ -122,7 +122,7 @@ const ProfileComponent = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Nuova Password"
+              label="Password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -137,7 +137,7 @@ const ProfileComponent = () => {
             onClick={handlePasswordUpdate}
             disabled={loadingPassword || !password}
           >
-            {loadingPassword ? <CircularProgress size={20} /> : 'Aggiorna Password'}
+            {loadingPassword ? <CircularProgress size={20} /> : 'Update Password'}
           </Button>
         </Box>
       </Paper>
@@ -145,12 +145,12 @@ const ProfileComponent = () => {
       {/* Sezione Dati Personali */}
       <Paper elevation={3} sx={{ p: 3 }}>
         <Typography variant="h6" sx={{ mb: 2 }}>
-          Informazioni Personali
+          Profile
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Nome"
+              label="First Name"
               value={profileData?.firstName || ''}
               onChange={(e) => setProfileData({ ...profileData, firstName: e.target.value })}
               fullWidth
@@ -158,7 +158,7 @@ const ProfileComponent = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Cognome"
+              label="Last Name"
               value={profileData?.lastName || ''}
               onChange={(e) => setProfileData({ ...profileData, lastName: e.target.value })}
               fullWidth
@@ -169,6 +169,7 @@ const ProfileComponent = () => {
                 <InputLabel id="gender-label">Genere</InputLabel>
                 <Select
                     labelId="gender-label"
+                    input={<OutlinedInput label="Gender" />}
                     value={profileData?.gender || ''}
                     onChange={(e) => setProfileData({ ...profileData, gender: e.target.value })}
                 >
@@ -179,7 +180,7 @@ const ProfileComponent = () => {
             </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Data di Nascita"
+              label="Birthday"
               type="date"
               value={profileData?.birthdate ? profileData.birthdate.slice(0, 10) : ''}
               onChange={(e) => setProfileData({ ...profileData, birthdate: e.target.value })}
@@ -189,7 +190,7 @@ const ProfileComponent = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Peso (kg)"
+              label="Weight (kg)"
               type="number"
               value={profileData?.weight || ''}
               onChange={(e) => setProfileData({ ...profileData, weight: e.target.value })}
@@ -198,7 +199,7 @@ const ProfileComponent = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Altezza (cm)"
+              label="Height (cm)"
               type="number"
               value={profileData?.height || ''}
               onChange={(e) => setProfileData({ ...profileData, height: e.target.value })}
@@ -213,12 +214,11 @@ const ProfileComponent = () => {
             onClick={handleProfileUpdate}
             disabled={loadingProfile}
           >
-            {loadingProfile ? <CircularProgress size={20} /> : 'Aggiorna Informazioni'}
+            {loadingProfile ? <CircularProgress size={20} /> : 'Update Profile'}
           </Button>
         </Box>
       </Paper>
 
-      {/* Feedback per l'utente */}
       {error && <Alert severity="error" sx={{ mt: 3 }}>{error}</Alert>}
       {success && <Alert severity="success" sx={{ mt: 3 }}>Aggiornamento avvenuto con successo!</Alert>}
     </Box>

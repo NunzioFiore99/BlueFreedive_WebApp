@@ -48,7 +48,7 @@ const LoginComponent = () => {
 
   return (
     <div className="login-container">
-      <h2>{isLogin ? 'Accedi' : 'Registrati'}</h2>
+      <h2>Blue Freedive</h2>
 
       <form onSubmit={handleSubmit}>
         {isLogin ? (
@@ -94,11 +94,11 @@ const LoginComponent = () => {
           </>
         )}
         {error && <p className="error">{error}</p>}
-        <button type="submit">{isLogin ? 'Accedi' : 'Registrati'}</button>
+        <button type="submit">{isLogin ? 'Login' : 'Sign Up'}</button>
       </form>
 
-      {isLogin ? <div className='switch-login-button-container'><p className='switch-login-text'>Non hai un account? </p> <Button variant="text" onClick={() => setIsLogin(!isLogin)}>Registrati</Button></div> 
-      : <div className='switch-login-button-container'> <p className='switch-login-text'>Hai già un account?</p> <Button variant="text" onClick={() => setIsLogin(!isLogin)}>Accedi</Button></div>}
+      {isLogin ? <div className='switch-login-button-container'><p className='switch-login-text'>Don't have an account? </p> <Button variant="text" onClick={() => setIsLogin(!isLogin)}>Sign Up</Button></div> 
+      : <div className='switch-login-button-container'> <p className='switch-login-text'>Already have an account? </p> <Button variant="text" onClick={() => setIsLogin(!isLogin)}>Login</Button></div>}
     </div>
   );
 };

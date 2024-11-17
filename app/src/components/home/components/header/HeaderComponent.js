@@ -1,4 +1,5 @@
 import React from 'react';
+import './HeaderComponent.css';
 import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import { useAuth } from '../../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -16,13 +17,11 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="fixed">
+    <AppBar position="fixed" sx={{background: "lightBlue"}}>
       <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Dive Manager
-        </Typography>
+        <Typography variant="h6" sx={{ flexGrow: 1}}/>
         {user && (
-          <Button color="inherit" onClick={handleLogout}>
+          <Button variant="contained" onClick={handleLogout}>
             Logout
           </Button>
         )}
