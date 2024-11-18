@@ -3,7 +3,6 @@ import { updateGlobalAccessToken } from '../context/AuthContext'
 
 const axiosInstance = axios.create({
     baseURL: `${process.env.REACT_APP_SERVER_URL}`,
-    withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use(
